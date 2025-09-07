@@ -6,7 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { BottomNav } from './BottomNav';
 import { Skeleton } from './ui/skeleton';
 
-const publicPaths = ['/login'];
+const publicPaths = ['/login', '/signup'];
 
 export function AppContent({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -16,13 +16,14 @@ export function AppContent({ children }: { children: React.ReactNode }) {
   const isPublicPath = publicPaths.includes(pathname);
 
   useEffect(() => {
-    // If loading is finished, and there's no user, and we're not on a public path, redirect to login
-    if (!loading && !user && !isPublicPath) {
-      router.replace('/login');
-    }
-    // If loading is finished, and there IS a user, and we're on a public path, redirect to home
-    if (!loading && user && isPublicPath) {
-      router.replace('/');
+    // If finished loading and we are in a browser context
+    if (typeof window !== 'undefined' && !loading) {
+      if (!user && !isPublicPath) {
+        router.replace('/login');
+      }
+      if (user && isPublicPath) {
+        router.replace('/');
+      }
     }
   }, [user, loading, router, isPublicPath, pathname]);
 
